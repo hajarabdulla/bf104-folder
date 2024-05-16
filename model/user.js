@@ -1,22 +1,18 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
 const bcrypt = require("bcrypt");
 
 const { Schema } = mongoose;
+
 const userSchema = new Schema(
   {
-    name: { type: String, required: [true, "Please provide a name"] },
+    name: { type: String, require: true },
     email: {
       type: String,
       require: [true, "Please provide an email"],
-      //   unique: true,
-      validate: validator.isEmail,
+    //   unique: true,
     },
-    photo: String,
-    password: {
-      type: String,
-      required: [true, "Please provide a password"],
-    },
+    age: { type: Number },
+    password: { type: String, require: true },
   },
   { timestamps: true }
 );
@@ -25,10 +21,6 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
-
-userSchema.methods.checkPasswords = async function (originalPass) {
-  return await bcrypt.compare(originalPass, this.password);
-};
 
 const User = mongoose.model("User", userSchema);
 
